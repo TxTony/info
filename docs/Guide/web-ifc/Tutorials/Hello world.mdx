@@ -5,8 +5,155 @@ sidebar_position: 1
 
 import { IfcCard } from "../../../../src/components/Card/InfoCard";
 
-## 🚧👷‍♀️ Under construction 👷‍♂️🚧
+# Hello world
+## Introduction
+Sometimes you don't have to work with IFC files without 3d rendering, when you just need to extract spatial informations, spatial tree,  project infos etc...  
 
-<IfcCard icon="💙" title="Thanks for your interest in IFC.js!">
-  We are building this section of the documentation right now. In the meantime, you can join the <a href="https://discord.gg/FXfyR4XrKT">Discord channel</a> and ask us any questions you need to implement IFC.js or to join the project.
-</IfcCard>
+## Setting up the project
+Node JS must be install on your machine, and to makes thing easier i recommand to use Visual Code studio with the plugin Live server.
+
+### install dependencies
+
+```shell
+npm init
+npm install web-ifc
+npm install rollup --save-dev
+npm install @rollup/plugin-node-resolve --save-dev
+npm install @open-wc/building-rollup
+```
+
+### add scripts in your package.json
+open your package.json  and add aliases build and watch in the scripts section,
+
+```json
+  "scripts": {
+    "build": "rollup -c ./rollup.config.js",
+    "watch": "rollup -w -c ./rollup.config.js"
+  },
+```
+
+### configure Rollup
+
+on your project root add a config file  **rollup.config.js**  with these configs values:
+
+```js
+import resolve from "@rollup/plugin-node-resolve";
+
+export default {
+  input: "src/app.js",
+  output: [
+
+    {
+      format: "esm",
+      file: "src/bundle.js",
+    },
+  ],
+  plugins: [resolve()],
+};
+```
+
+### Feed your src folder :) 
+
+Add an src folder it will contains the following files : 
+- app.js
+- index.html
+- style.css
+- copy **web-ifc-mt.wasm** and **web-ifc.wasm**  from **node_modules/web-ifc** to src
+
+### Serving files from a server 
+
+for Visual code studio lovers there is an extension which remove all headaches, this will give you the possibility to serve your bundled app. elsewhere you can run your code throught node server directly
+
+https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer
+
+## How to do it 
+If you don't have sample ifcModel you can grab one from  [here](https://github.com/IFCjs/test-ifc-files)
+
+### index.html
+``` html
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="../../../favicon.ico">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IFC.js</title>
+</head>
+
+<body>
+  <div id="main">
+      <input type="file" id="file-input" accept=".ifc, .ifcXML, .ifcZIP">
+      <div id="result"><\div>
+  </div>
+  <script src="bundle.js"></script>
+</body>
+
+  
+
+</html>
+```
+
+### app.js
+
+#### definitions
+We will only need **web-ifc/web-ifc-api.js** and you can change the values in the vars. just pay attention on ifcFileLocation its an ifcModel stored in the src folder in this demo.
+
+```js
+  
+import * as WebIFC from "web-ifc/web-ifc-api.js";
+
+const resultHtmlElement = document.getElementById("result");
+const ifcapi = new WebIFC.IfcAPI();
+
+var ifcFileLocation = "duplex-apartment.ifc";
+var expressID = 212; // expressId = line number in ifc file e.g( #212=IFSPACE...)
+var modelID = 0;
+
+```
+
+#### fetching ifcFile function
+
+i've chosen the XMLHttpRequest to fetch my file you can chose any method of your choice. The only required thing is ``new Uint8Array(oReq.response)`` at the end.
+
+```js
+/**
+ * resolve a Uint8Array().
+ * 
+ * @param string url location of your ifc file
+ * @returns {Promise}
+ */
+function getIfcFile(url) {
+    return new Promise((resolve, reject) => {
+        var oReq = new XMLHttpRequest();
+        oReq.responseType = "arraybuffer";
+        oReq.addEventListener("load", () => {
+            resolve(new Uint8Array(oReq.response));
+        });
+        oReq.open("GET", url);
+        oReq.send();
+    });
+}
+```
+
+#### loadFile with Web-ifc and play with the API
+We are almost done ;) . ifcapi is initialized we fetch our ifcFile and with ifcapi we can work with the loaded file
+``` js
+
+ifcapi.Init().then(() => {
+    getIfcFile(ifcFileLocation).then((ifcData) => {
+        modelID = ifcapi.OpenModel(ifcData);
+        let lineByExpressID = ifcapi.GetLine(modelID, expressID);
+        console({lineByExpressID})
+        ifcapi.CloseModel(modelID);
+    });
+});
+```
+
+
+### Final result
+if you set up all corectly you should have this.
+
+![[Pasted image 20220820142848.png]]
