@@ -7,7 +7,13 @@ import { IfcCard } from "../../../../src/components/Card/InfoCard";
 
 
 ## Introduction
-Sometimes you have to work with IFC files without 3d rendering, when you just need to extract spatial informations, spatial tree,  project infos etc...  
+Web-ifc provides an easy way to read and manipulate your ifc file. you can as example to get the spatial tree information or project, geometries, add new entities etc...
+In this tutorial we will **Load an ifc** file and **Retrieves all its IFCSPACE**.  
+:muscle: Thanks to web-ifc all of these are just a breeze 
+
+<IfcCard>
+    👉 You can get the full code <a href="https://github.com/ifcjs/hello-world/tree/main/examples/web-ifc/hello-world">here</a>.
+</IfcCard>
 
 ## Setting up the project
 👩‍🏫 Node JS must be install on your machine, and to makes thing easier i recommand to use Visual Code studio with the plugin Live server.
@@ -58,7 +64,7 @@ To make things easier we drop all in the root folder :
 - app.js
 - index.html
 - drop an .ifc file of your choice for testing.
-- copy **web-ifc-mt.wasm** and **web-ifc.wasm**  from **node_modules/web-ifc** to src
+- copy **web-ifc-mt.wasm** and **web-ifc.wasm**  from **node_modules/web-ifc** here in the root folder
 
 ### Serving files from a server 
 
@@ -67,6 +73,10 @@ for Visual code studio lovers there is an extension which remove all headaches, 
 https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer
 
 ## How to do it 
+Ok now you've got your folder ready to start, let's complete these 2 objectives : 
+- load your ifc file
+- grab some datas from this loaded ifc file 
+:pray:
 
 ### get an .ifc file
 
@@ -134,11 +144,11 @@ function getIfcFile(url) {
 }
 ```
 
-#### loadFile with Web-ifc and play with the API
+#### loadFile with Web-ifc
 We are almost done ;) . ifcapi is initialized we fetch our ifcFile and with ifcapi we can work with the loaded file
 ``` js
 ifcapi.Init().then(()=>{
-  getIfcFile(ifcFileLocation).then(async (ifcData) => {
+  getIfcFile(ifcFileLocation).then((ifcData) => {
     modelID = ifcapi.OpenModel(ifcData);
     let isModelOpened = ifcapi.IsModelOpen(modelID);
     console.log({isModelOpened});
@@ -156,7 +166,7 @@ All is setup and running but now i want **ALL** IFCSPACES
 
 ### Retrieve a list of spaces.
 
-Okay, now i want to get all IFCSPACES and display them somewhere. Lets make a function wich grab all IFCSPACE.
+Okay, now i want to get all the IFCSPACES and display them somewhere. Lets make a function wich grab all IFCSPACE.
 :smiling_imp: You can fetch by any type you need. i've made a total arbitrary decision to take IFCSPACE.
 
 
@@ -184,9 +194,11 @@ function getAllSpaces(modelID) {
 }
 ```
 
-If your attentive you will notice the const IFSPACE from ``` js let lines = ifcapi.GetLineIDsWithType(modelID, IFCSPACE); ``` it means I want to get all IFCSPACE from my ifc file. Don't forget to import this as follow.
+If your attentive you will notice the const IFSPACE from **let lines = ifcapi.GetLineIDsWithType(modelID, IFCSPACE);** it means I want to get all IFCSPACE from my ifc file. Don't forget to import this as follow.
 
-``import {IfcAPI,IFCSPACE} from "web-ifc/web-ifc-api";``
+```js
+import {IfcAPI,IFCSPACE} from "web-ifc/web-ifc-api";
+```
 
 #### call getAllSpaces
 
@@ -207,5 +219,7 @@ ifcapi.Init().then(() => {
 ```
 ## Next steps
 🎉🎉🎉 **congratulations**  you can load your .ifc file and find any element you want. However it could be nice to navigate in your spatial tree, or describe an IFCSPACE... To be continued :yum:   🎉🎉🎉
+
+
 
 
