@@ -25,7 +25,7 @@ npm init
 npm install web-ifc
 npm install rollup --save-dev
 npm install @rollup/plugin-node-resolve --save-dev
-npm install @open-wc/building-rollup
+npm install @open-wc/building-rollup --save-dev
 ```
 
 ### add scripts in your package.json
@@ -46,12 +46,12 @@ on your project root add a config file  **rollup.config.js**  with these configs
 import resolve from "@rollup/plugin-node-resolve";
 
 export default {
-  input: "./app.js",
+  input: "app.js",
   output: [
 
     {
       format: "esm",
-      file: "./bundle.js",
+      file: "bundle.js",
     },
   ],
   plugins: [resolve()],
@@ -97,7 +97,7 @@ If you don't have a sample ifcModel you can grab one from  [here](https://github
 
 <body>
   <div id="main">
-      <div id="result"><\div>
+      <div id="result"></div>
   </div>
   <script src="bundle.js"></script>
 </body>
@@ -114,7 +114,7 @@ We will only need **web-ifc/web-ifc-api**  just pay attention on ifcFileLocation
 
 ```js
 import {IfcAPI} from "web-ifc/web-ifc-api";
-const ifcFileLocation = "duplex-apartment.ifc";
+const ifcFileLocation = "duplex-apartment.ifc"; // dont forget to modify for your ifc filename
 let modelID = 0;
 const ifcapi = new IfcAPI();
 //ifcapi.SetWasmPath("./wasm/"); only if the wasm file are note at the same level as app.js
@@ -156,6 +156,10 @@ ifcapi.Init().then(()=>{
   });
 });
 ```
+
+#### Let's Build
+run this command before opening your app **npm run build** rollup will build your app and then you will have to serve your app. If you have live server extension installed on Visual code studio you can simply run it and go to the hello_world example.
+⚠️ At any code changes don't forget to rebuild OR you can use **npm run watch** while the job is not done rollup will rebuild on code save 😊 
 
 if in your console you got this message `{isModelOpened: true}`
 
@@ -206,7 +210,7 @@ after the .ifc file has been retrieved and loaded in ifcapi i can call my functi
 
 ```js 
 ifcapi.Init().then(() => {
-    getIfcFile(ifcFileLocation).then(async (ifcData) => {
+    getIfcFile(ifcFileLocation).then((ifcData) => {
         modelID = ifcapi.OpenModel(ifcData);
         let isModelOpened = ifcapi.IsModelOpen(modelID);
         console.log({isModelOpened});
